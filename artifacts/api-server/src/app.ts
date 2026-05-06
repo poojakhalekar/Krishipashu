@@ -34,7 +34,7 @@ app.use("/api", router);
 
 // In production, serve the built frontend static files
 if (process.env.NODE_ENV === "production") {
-  const clientDir = path.resolve(__dirname, "..", "client");
+  const clientDir = path.resolve(__dirname, "client");
   app.use(express.static(clientDir));
   // SPA fallback: serve index.html for any non-API route
   app.get("/{*path}", (_req, res) => {
