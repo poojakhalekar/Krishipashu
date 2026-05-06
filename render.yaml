@@ -12,15 +12,19 @@ services:
     name: krishipashu
     runtime: node
     plan: free
+    region: oregon
     buildCommand: |
-      npm i -g pnpm &&
-      pnpm install --frozen-lockfile &&
-      node build.production.mjs &&
-      cd lib/db && DATABASE_URL=$DATABASE_URL pnpm run db:push
-    startCommand: node artifacts/api-server/dist/index.mjs
+      corepack enable &&
+      corepack prepare pnpm@latest --activate &&
+      pnpm install --no-frozen-lockfile &&
+      node build.production.mjs
+    startCommand: |
+      cd lib/db && npx drizzle-kit push --config ./drizzle.config.ts && cd ../.. && node artifacts/api-server/dist/index.mjs
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: "20.20.2"
       - key: PORT
         value: "8080"
       - key: JWT_SECRET
