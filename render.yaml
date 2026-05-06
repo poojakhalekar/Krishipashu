@@ -1,0 +1,33 @@
+# Render.com Blueprint
+# https://render.com/docs/blueprint-spec
+
+databases:
+  - name: krishipashu-db
+    plan: free
+    databaseName: livestock_management
+    user: krishipashu
+
+services:
+  - type: web
+    name: krishipashu
+    runtime: node
+    plan: free
+    buildCommand: |
+      npm i -g pnpm &&
+      pnpm install --frozen-lockfile &&
+      node build.production.mjs &&
+      cd lib/db && DATABASE_URL=$DATABASE_URL pnpm run db:push
+    startCommand: node artifacts/api-server/dist/index.mjs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "8080"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: krishipashu-db
+          property: connectionString
+      - key: VITE_PUBLIC_BASE_URL
+        value: ""
